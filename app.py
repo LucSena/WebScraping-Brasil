@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from flask import jsonify
 import requests
+import random
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
@@ -8,7 +9,6 @@ app = Flask(__name__)
 # Lista de lojas disponíveis
 lojas = ['Filtro Loja', 'Mercado Livre', 'Magazine Luiza']
 
-# Função para fazer scraping do Mercado Livre
 def scrape_mercado_livre(pesquisa):
     produtos = []
     url = f"https://lista.mercadolivre.com.br/{pesquisa}"
@@ -33,7 +33,15 @@ def scrape_mercado_livre(pesquisa):
                 preco_sem_desconto = precos[0].text
                 preco_com_desconto = None
 
-            produtos.append({'nome': nome_produto + ' - Mercado Livre', 'preco_sem_desconto': preco_sem_desconto, 'preco_com_desconto': preco_com_desconto, 'imagem': imagem_produto})
+        produtos.append({
+            'nome': nome_produto,
+            'preco_sem_desconto': preco_sem_desconto,
+            'preco_com_desconto': preco_com_desconto,
+            'imagem': imagem_produto,
+            'loja': 'Mercado Livre',
+            'cor': '#f6aa1d',
+            'link': link_produto_elemento['href']  # Adicione esta linha para obter o link do produto
+        })
 
     return produtos
 
@@ -48,6 +56,7 @@ def scrape_magazine_luiza(pesquisa):
     for produto in produtos_list:
         img_produto_elemento = produto.find('img', {'data-testid': 'image'})
         info_produto = produto.find('div', {'data-testid': 'product-card-content'})
+        link_produto_elemento = produto.find('a', {'data-testid': 'product-card-container'})
 
         if info_produto and img_produto_elemento:
             nome_produto_elemento = info_produto.find('h2', {'data-testid': 'product-title'})
@@ -60,9 +69,18 @@ def scrape_magazine_luiza(pesquisa):
                 preco_original = preco_original_elemento.text.strip()
                 img_produto = img_produto_elemento['src']
 
-                produtos.append({'nome': nome_produto + ' - Magazine Luiza', 'preco_sem_desconto': preco_original, 'preco_com_desconto': preco_produto, 'imagem': img_produto})
+            produtos.append({
+                'nome': nome_produto,
+                'preco_sem_desconto': preco_original,
+                'preco_com_desconto': preco_produto,
+                'imagem': img_produto,
+                'loja': 'Magazine Luiza',
+                'cor': 'blue',
+                'link': f"https://www.magazineluiza.com.br{link_produto_elemento['href']}"
+            })
 
     return produtos
+
 
 @app.route('/', methods=['GET'])
 def index():
@@ -81,6 +99,7 @@ def pesquisar():
         produtos += scrape_magazine_luiza(pesquisa)
     elif loja == 'Filtro Loja':
         produtos += scrape_mercado_livre(pesquisa) + scrape_magazine_luiza(pesquisa)
+        random.shuffle(produtos)
 
     return jsonify(produtos=produtos)
 

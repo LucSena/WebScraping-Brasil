@@ -20,7 +20,7 @@
                         $.each(response.produtos, function(i, produto){
                             var novoProduto = '<li class="relative bg-white p-4 shadow-md rounded-md min-h-[240px] flex flex-col justify-between">' +
                                               '<img src="' + produto.imagem + '" alt="' + produto.nome + '" class="h-52 rounded w-full object-contain mb-4">' +
-                                              '<div><p class="text-xl font-semibold mb-2">' + produto.nome + '</p></div>' +
+                                              '<div><p class="text-xl font-semibold mb-2"><span class="' + produto.cor + '">' + produto.nome + '</span> <span class="text-sm" style="color: ' + produto.cor + ';">  - [' + produto.loja + ']</span></p></div>' +
                                               '<div class="mt-auto">';
         
                             if (produto.preco_com_desconto) {
@@ -29,7 +29,11 @@
                             } else {
                                 novoProduto += '<p class="text-blue-700 font-bold mb-2">R$ ' + produto.preco_sem_desconto + '</p>';
                             }
-        
+                            
+                            //link para o produto
+                            novoProduto += '<div class="absolute bottom-0 right-0 mb-6 mr-2">' +
+                            '<a href="' + produto.link + '" target="_blank" class="bg-transparent border border-blue-500 text-blue-700 p-2 rounded-md">Ver Produto</a>' +
+                            '</div>';
                             novoProduto += '</div></li>';
         
                             $("ul").append(novoProduto);
@@ -71,6 +75,7 @@
                         {% else %}
                             <p class="text-blue-700 font-bold mb-2">R$ {{ produto.preco_sem_desconto }}</p>
                         {% endif %}
+                        <a href="{{ produto.link }}" target="_blank" class="bg-blue-500 text-white p-2 rounded-md w-full">Ver Produto</a>
                     </div>
                 </li>
             {% endfor %}
