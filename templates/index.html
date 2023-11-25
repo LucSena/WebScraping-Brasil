@@ -7,45 +7,81 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        $(document).ready(function(){
-            $("form").on("submit", function(event){
-                event.preventDefault();
-                var formData = $(this).serialize();
-                $.ajax({
-                    type: "POST",
-                    url: "/pesquisar",
-                    data: formData,
-                    success: function(response){
-                        $("ul").empty();
-                        $.each(response.produtos, function(i, produto){
-                            var novoProduto = '<li class="relative bg-white p-4 shadow-md rounded-md min-h-[240px] flex flex-col justify-between">' +
-                                              '<img src="' + produto.imagem + '" alt="' + produto.nome + '" class="h-52 rounded w-full object-contain mb-4">' +
-                                              '<div><p class="text-xl font-semibold mb-2"><span class="' + produto.cor + '">' + produto.nome + '</span> <span class="text-sm" style="color: ' + produto.cor + ';">  - [' + produto.loja + ']</span></p></div>' +
-                                              '<div class="mt-auto">';
-        
-                            if (produto.preco_com_desconto) {
-                                novoProduto += '<p class="text-gray-500 line-through">R$ ' + produto.preco_sem_desconto + '</p>' +
-                                               '<p class="text-yellow-500 font-bold">R$ ' + produto.preco_com_desconto + '</p>';
-                            } else {
-                                novoProduto += '<p class="text-blue-700 font-bold mb-2">R$ ' + produto.preco_sem_desconto + '</p>';
-                            }
-                            
-                            //link para o produto
-                            novoProduto += '<div class="absolute bottom-0 right-0 mb-6 mr-2">' +
-                            '<a href="' + produto.link + '" target="_blank" class="bg-transparent border border-blue-500 text-blue-700 p-2 rounded-md">Ver Produto</a>' +
-                            '</div>';
-                            novoProduto += '</div></li>';
-        
-                            $("ul").append(novoProduto);
-                        });
-                    },
-                    error: function(error){
-                        console.log(error);
-                    }
-                });
-            });
-        });
-        </script>
+      $(document).ready(function(){
+          $("form").on("submit", function(event){
+              event.preventDefault();
+              var formData = $(this).serialize();
+  
+              // Limpar mensagens de erro anteriores
+              $(".bg-red-500").remove();
+  
+              $.ajax({
+                  type: "POST",
+                  url: "/pesquisar",
+                  data: formData,
+                  success: function(response){
+                      $("ul").empty();
+  
+                      if (response.produtos.length === 0) {
+                          // Mostra a mensagem de erro apenas se não houver produtos e nenhuma mensagem de erro já estiver sendo exibida
+                          if ($(".bg-red-500").length === 0) {
+                              var errorMessage = '<div class="bg-red-500 text-white p-4 mb-4 rounded-md">' +
+                                                  '<p>Não foi possível conectar ao servidor. Por favor, tente novamente mais tarde.</p>' +
+                                                  '</div>';
+                              $("body").append(errorMessage);
+                          }
+                          return;
+                      }
+  
+                      $.each(response.produtos, function(i, produto){
+                          var novoProduto = '<li class="relative bg-white p-4 shadow-md rounded-md min-h-[240px] flex flex-col justify-between">' +
+                                          '<img src="' + produto.imagem + '" alt="' + produto.nome + '" class="h-52 rounded w-full object-contain mb-4">' +
+                                          '<div><p class="text-xl font-semibold mb-2"><span class="' + (produto.cor ? produto.cor : 'text-green-500') + '">' + produto.nome + '</span> <span class="text-sm" style="color: ' + (produto.cor ? produto.cor : 'text-green-500') + ';"> - [' + produto.loja + ']</span></p></div>'
+                                          '<div class="mt-auto">';
+                          if (produto.preco_com_desconto) {
+                              novoProduto += '<p class="text-gray-500 line-through">R$ ' + produto.preco_sem_desconto + '</p>' +
+                                          '<p class="text-yellow-500 font-bold">R$ ' + produto.preco_com_desconto + '</p>';
+                          } else {
+                              novoProduto += '<p class="text-blue-700 font-bold mb-2">R$ ' + produto.preco_sem_desconto + '</p>';
+                          }
+                          novoProduto += '<div class="absolute bottom-0 right-0 mb-6 mr-2">' +
+                                         '<a href="' + produto.link + '" target="_blank" class="bg-transparent border border-blue-500 text-blue-700 p-2 rounded-md">Ver Produto</a>' +
+                                         '</div>';
+                          novoProduto += '</div></li>';
+                          $("ul").append(novoProduto);
+                      });
+                  },
+                  error: function(xhr, textStatus, errorThrown) {
+                      console.log(xhr.status);
+                      if (xhr.status === 503) {
+                          // Mostra a mensagem de erro apenas se nenhuma mensagem de erro já estiver sendo exibida
+                          if ($(".bg-red-500").length === 0) {
+                              var errorMessage = '<div class="bg-red-500 text-white p-4 mb-4 rounded-md">' +
+                                                  '<p>O serviço está temporariamente indisponível. Por favor, tente novamente mais tarde.</p>' +
+                                                  '</div>';
+                              $("body").append(errorMessage);
+                          }
+                      } else {
+                          // Mostra a mensagem de erro apenas se nenhuma mensagem de erro já estiver sendo exibida
+                          if ($(".bg-red-500").length === 0) {
+                              console.log(errorThrown);
+                              var errorMessage = '<div class="bg-red-500 text-white p-4 mb-4 rounded-md">' +
+                                                  '<p>Não foi possível conectar ao servidor. Por favor, tente novamente mais tarde.</p>' +
+                                                  '</div>';
+                              $("body").append(errorMessage);
+                          }
+                      }
+                  }
+              });
+          });
+      });
+  </script>
+  
+  
+  
+  
+  
+     
         
 </head>
 <body class="bg-gray-100 font-sans p-4">

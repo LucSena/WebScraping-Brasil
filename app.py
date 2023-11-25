@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 app = Flask(__name__)
 
 # Lista de lojas disponíveis
-lojas = ['Filtro Loja', 'Mercado Livre', 'Magazine Luiza']
+lojas = ['Filtro Loja', 'Mercado Livre', 'Magazine Luiza', 'Amazon']
 
 def scrape_mercado_livre(pesquisa):
     produtos = []
@@ -81,6 +81,150 @@ def scrape_magazine_luiza(pesquisa):
 
     return produtos
 
+# def scrape_amazon(pesquisa):
+#  url = f"https://www.amazon.com.br/s?k={pesquisa}"
+#  error_message = None
+
+#  try:
+#     # Fazendo a requisição para a página
+#     resposta = requests.get(url)
+
+#     # Verificando se a requisição foi bem-sucedida
+#     resposta.raise_for_status()
+
+#     soup = BeautifulSoup(resposta.text, 'html.parser')
+#     produtos_list = soup.find_all('div', {'class': 's-asin'})
+
+#     produtos = []
+#     for produto in produtos_list:
+#         # Obtendo o Nome do Produto
+#         product_name_element = produto.find('span', {'class': 'a-size-base-plus'})
+#         if product_name_element:
+#             product_name = product_name_element.text.strip()
+#         else:
+#             # Se o nome do produto não estiver disponível, você pode tratar isso da maneira que preferir
+#             product_name = "Nome não disponível"
+
+#         # Obtendo o Preço do Produto
+#         price_element = produto.find('span', {'class': 'a-price'})
+#         if price_element:
+#             product_price = price_element.find('span', {'class': 'a-offscreen'}).text.strip()
+#         else:
+#             # Se o preço do produto não estiver disponível, você pode tratar isso da maneira que preferir
+#             product_price = "Preço não disponível"
+
+#         # Obtendo o Preço Original (sem promoção) se estiver presente
+#         original_price_element = produto.find('span', {'class': 'a-text-price'})
+#         if original_price_element:
+#             original_price = original_price_element.find('span', {'class': 'a-offscreen'}).text.strip()
+#         else:
+#             # Se o preço original do produto não estiver disponível, você pode tratar isso da maneira que preferir
+#             original_price = "Preço original não disponível"
+
+#         # Obtendo a Imagem do Produto
+#         image_element = produto.find('img', {'class': 's-image'})
+#         if image_element:
+#             product_image = image_element['src']
+#         else:
+#             # Se a imagem do produto não estiver disponível, você pode tratar isso da maneira que preferir
+#             product_image = "Imagem não disponível"
+
+#         # Obtendo o Link do Produto
+#         link_element = produto.find('a', {'class': 'a-link-normal'})
+#         if link_element:
+#             product_link = 'https://www.amazon.com.br' + link_element['href']
+#         else:
+#             # Se o link do produto não estiver disponível, você pode tratar isso da maneira que preferir
+#             product_link = "Link não disponível"
+#         # Adicionando os detalhes do produto à lista de produtos
+#         produtos.append({
+#             'nome': product_name,
+#             'preco_sem_desconto': original_price,
+#             'preco_com_desconto': product_price,
+#             'imagem': product_image,
+#             'loja': 'Amazon',
+#             'cor': '#a6611e',
+#             'link': product_link
+#         })
+
+#  except requests.exceptions.HTTPError as errh:
+#     if resposta.status_code == 503:
+#         # Adicione um tratamento para indicar um erro 503
+#         error_message = {
+#             'error': 'Amazon está temporariamente indisponível. Tente novamente mais tarde.'
+#         }
+#         return {'error': error_message, 'status': resposta.status_code}
+#     else:
+#         print(f"Erro HTTP: {errh}")
+#  except requests.exceptions.ConnectionError as errc:
+#     print(f"Erro de Conexão: {errc}")
+#  except requests.exceptions.Timeout as errt:
+#     print(f"Erro de Timeout: {errt}")
+#  except requests.exceptions.RequestException as err:
+#     print(f"Erro ao acessar a página: {err}")
+
+#  return {'produtos': produtos, 'error': error_message, 'status': resposta.status_code if resposta else None}
+
+
+def scrape_amazon(pesquisa):
+    produtos = []
+    url = f"https://www.amazon.com.br/s?k={pesquisa}"
+    resposta = requests.get(url)
+    soup = BeautifulSoup(resposta.text, 'html.parser')
+    produtos_list = soup.find_all('div', {'class': 's-asin'})
+
+    for produto in produtos_list:
+        # Obtendo o Nome do Produto
+        product_name_element = produto.find('span', {'class': 'a-size-base-plus'})
+        if product_name_element:
+            product_name = product_name_element.text.strip()
+        else:
+            # Se o nome do produto não estiver disponível, você pode tratar isso da maneira que preferir
+            product_name = "Nome não disponível"
+
+        # Obtendo o Preço do Produto
+        price_element = produto.find('span', {'class': 'a-price'})
+        if price_element:
+            product_price = price_element.find('span', {'class': 'a-offscreen'}).text.strip()
+        else:
+            # Se o preço do produto não estiver disponível, você pode tratar isso da maneira que preferir
+            product_price = "Preço não disponível"
+
+        original_price_element = produto.find('span', {'class': 'a-text-price'})
+        if original_price_element:
+            original_price = original_price_element.find('span', {'class': 'a-offscreen'}).text.strip()
+        else:
+            # Se o preço original do produto não estiver disponível, pule para o próximo produto
+            continue
+
+        # Obtendo a Imagem do Produto
+        image_element = produto.find('img', {'class': 's-image'})
+        if image_element:
+            product_image = image_element['src']
+        else:
+            # Se a imagem do produto não estiver disponível, você pode tratar isso da maneira que preferir
+            product_image = "Imagem não disponível"
+
+        # Obtendo o Link do Produto
+        link_element = produto.find('a', {'class': 'a-link-normal'})
+        if link_element:
+            product_link = 'https://www.amazon.com.br' + link_element['href']
+        else:
+            # Se o link do produto não estiver disponível, você pode tratar isso da maneira que preferir
+            product_link = "Link não disponível"
+
+        # Adicionando os detalhes do produto à lista de produtos
+        produtos.append({
+            'nome': product_name,
+            'preco_sem_desconto': original_price,
+            'preco_com_desconto': product_price,
+            'imagem': product_image,
+            'loja': 'Amazon',
+            'cor': 'orange',  # Você pode escolher a cor desejada
+            'link': product_link
+        })
+
+    return produtos
 
 @app.route('/', methods=['GET'])
 def index():
@@ -97,8 +241,10 @@ def pesquisar():
         produtos += scrape_mercado_livre(pesquisa)
     elif loja == 'Magazine Luiza':
         produtos += scrape_magazine_luiza(pesquisa)
+    elif loja == 'Amazon':
+        produtos += scrape_amazon(pesquisa)
     elif loja == 'Filtro Loja':
-        produtos += scrape_mercado_livre(pesquisa) + scrape_magazine_luiza(pesquisa)
+        produtos += scrape_mercado_livre(pesquisa) + scrape_magazine_luiza(pesquisa) + scrape_amazon(pesquisa)
         random.shuffle(produtos)
 
     return jsonify(produtos=produtos)
