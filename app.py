@@ -220,7 +220,7 @@ def scrape_amazon(pesquisa):
             'preco_com_desconto': product_price,
             'imagem': product_image,
             'loja': 'Amazon',
-            'cor': 'orange',  # Você pode escolher a cor desejada
+            'cor': '#a6611e',
             'link': product_link
         })
 
