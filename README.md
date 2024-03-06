@@ -1,13 +1,37 @@
-# GitHub Codespaces ♥️ Flask
+# Projeto WebScraping-Brasil 🌐
 
-Welcome to your shiny new Codespace running Flask! We've got everything fired up and running for you to explore Flask.
+## Descrição 📄
+Este é um projeto simples de WebScraping em Python utilizando Flask. Ele permite aos usuários pesquisar produtos em lojas online como Magazine Luiza, Mercado Livre e Amazon. O usuário pode digitar o produto desejado, e o sistema busca nas três lojas ou na loja selecionada, exibindo uma tela com os produtos encontrados, incluindo imagem, preço e preço antes da promoção. O Frontend foi desenvolvido com Tailwind CSS.
 
-You've got a blank canvas to work on from a git perspective as well. There's a single initial commit with the what you're seeing right now - where you go from here is up to you!
+## Capturas de Tela 📸
+<!-- Adicione suas capturas de tela aqui -->
 
-Everything you do here is contained within this one codespace. There is no repository on GitHub yet. If and when you’re ready you can click "Publish Branch" and we’ll create your repository and push up your project. If you were just exploring then and have no further need for this code then you can simply delete your codespace and it's gone forever.
+### Tela de Pesquisa
+<!-- Adicione a captura de tela da tela de pesquisa aqui -->
 
-To run this application:
+### Tela de Resultados
+<!-- Adicione a captura de tela da tela de resultados aqui -->
 
-```
-flask --debug run
-```
+## Tecnologias Utilizadas 🛠️
+![Python](https://img.shields.io/badge/python-%2314354C.svg?style=for-the-badge&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+
+## Como Executar o Projeto ▶️
+1. Clone o repositório: `git clone https://github.com/seu-usuario/WebScraping-Brasil.git`
+2. Navegue até o diretório do projeto: `cd WebScraping-Brasil`
+3. Instale as dependências: `pip install -r requirements.txt`
+4. Inicie o servidor Flask: `python app.py`
+5. Abra o navegador e acesse `http://localhost:5000`
+
+## Funcionalidades ⚙️
+- Pesquisar produtos em lojas online como Magazine Luiza, Mercado Livre e Amazon
+- Exibir resultados com imagem, preço e preço antes da promoção
+- Permitir seleção da loja para pesquisa
+- Interface simples e amigável para o usuário
+
+## Contribuindo 🤝
+Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request.
+
+## Licença 📜
+Este projeto está licenciado sob a [Licença MIT](LICENSE).
